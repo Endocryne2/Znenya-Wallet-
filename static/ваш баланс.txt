@@ -1,0 +1,2 @@
+<h2>Ваши балансы</h2>
+    <div class="balance">{{ user_info[3] }} $ZHY</div> <!-- Убрано "Баланс:" -->
