@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #e6e6e6; /* Светлый фон, как в Telegram */
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    .transfer-container {
+        max-width: 600px; /* Уменьшен размер контейнера */
+        margin: 20px auto; /* Центрирование контейнера */
+        padding: 40px; /* Внутренний отступ */
+        background-color: #ffffff; /* Белый фон контейнера */
+        border-radius: 10px; /* Скругленные углы */
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Тень для контейнера */
+        text-align: center; /* Центрирование текста */
+    }
+
+    h1 {
+        color: #0088cc; /* Цвет заголовка */
+        font-size: 28px; /* Размер заголовка */
+        margin-bottom: 20px; /* Отступ снизу */
+    }
+
+    input[type="text"],
+    input[type="number"] {
+        width: 100%; /* Ширина элементов на 100% */
+        padding: 15px; /* Внутренний отступ для элементов */
+        margin: 10px 0; /* Отступы между элементами */
+        border: 1px solid #ccc; /* Рамка вокруг элементов */
+        border-radius: 5px; /* Скругленные углы */
+        font-size: 16px; /* Размер шрифта */
+        transition: border-color 0.3s; /* Плавный переход цвета рамки */
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+        border-color: #0088cc; /* Цвет рамки при фокусе */
+        outline: none; /* Убираем стандартное выделение */
+    }
+
+    .currency-select {
+        position: relative; /* Для позиционирования выпадающего списка */
+        margin: 10px 0; /* Отступы */
+    }
+
+    .select-selected {
+        padding: 15px; /* Внутренний отступ */
+        border: 1px solid #0088cc; /* Рамка */
+        border-radius: 5px; /* Скругленные углы */
+        background-color: #f8f8f8; /* Светлый фон */
+        cursor: pointer; /* Курсор при наведении */
+    }
+
+    .select-items {
+        position: absolute; /* Позиционирование */
+        z-index: 99; /* Чтобы быть сверху других элементов */
+        background-color: #ffffff; /* Белый фон выпадающего списка */
+        border: 1px solid #ccc; /* Рамка */
+        border-radius: 5px; /* Скругленные углы */
+        display: none; /* Скрываем по умолчанию */
+        max-height: 200px; /* Ограничение высоты */
+        overflow-y: auto; /* Полоса прокрутки */
+        width: 100%; /* Ширина на 100% */
+    }
+
+    .select-items div {
+        padding: 10px; /* Внутренний отступ */
+        cursor: pointer; /* Курсор при наведении */
+        display: flex; /* Гибкое выравнивание */
+        align-items: center; /* Вертикальное выравнивание */
+    }
+
+    .select-items div:hover {
+        background-color: #f0f0f0; /* Цвет фона при наведении */
+    }
+
+    .select-items img {
+        width: 25px; /* Размер иконки */
+        height: 25px; /* Размер иконки */
+        margin-right: 10px; /* Отступ между иконкой и текстом */
+    }
+
+    button {
+        width: 100%; /* Ширина кнопки на 100% */
+        padding: 15px; /* Внутренний отступ для кнопки */
+        margin-top: 20px; /* Отступ сверху */
+        background-color: #0088cc; /* Цвет фона кнопки */
+        color: white; /* Цвет текста на кнопке */
+        border: none; /* Убираем рамку */
+        border-radius: 5px; /* Скругленные углы */
+        cursor: pointer; /* Курсор при наведении */
+        transition: background-color 0.3s; /* Плавный переход цвета */
+        font-size: 16px; /* Размер шрифта */
+    }
+
+    button:hover {
+        background-color: #007bb5; /* Цвет фона кнопки при наведении */
+    }
+
+    .back-button {
+        display: inline-block; /* Внешний вид как у кнопки */
+        margin-top: 20px; /* Отступ сверху */
+        color: #0088cc; /* Цвет текста */
+        text-decoration: none; /* Убираем подчеркивание */
+        font-size: 16px; /* Размер шрифта */
+        transition: color 0.3s; /* Плавный переход цвета */
+    }
+
+    .back-button:hover {
+        color: #007bb5; /* Цвет текста при наведении */
+    }
+
+    .alert {
+        margin-top: 20px; /* Отступ сверху для сообщений об ошибках */
+    }
+</style>
+
+<div class="transfer-container">
+    <h1>Перевод средств</h1>
+    
+    <form method="POST" action="{{ url_for('transfer') }}">
+        <input type="text" name="recipient_wallet" placeholder="Адрес кошелька получателя" required>
+        
+        <input type="number" name="amount" placeholder="Сумма" required>
+        
+        <div class="currency-select">
+            <div class="select-selected">Выберите валюту</div>
+            <div class="select-items">
+                <div data-value="ZhenyaCoin">
+                    <img src="{{ url_for('static', filename='zhenyacoin.png') }}" alt="ZhenyaCoin"> ZhenyaCoin
+                </div>
+                <div data-value="Bitcoin">
+                    <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg" alt="Bitcoin"> Bitcoin
+                </div>
+                <div data-value="Ethereum">
+                    <img src="https://cryptologos.cc/logos/ethereum-eth-logo.svg" alt="Ethereum"> Ethereum
+                </div>
+                <div data-value="USDT">
+                    <img src="https://cryptologos.cc/logos/tether-usdt-logo.svg" alt="USDT"> USDT
+                </div>
+                <div data-value="TON">
+                    <img src="https://cryptologos.cc/logos/toncoin-ton-logo.svg" alt="TON"> TON
+                </div>
+            </div>
+            <input type="hidden" name="currency" id="selected-currency">
+        </div>
+
+        <button type="submit">Отправить</button>
+    </form>
+    
+    <a class="back-button" href="{{ url_for('home') }}">Назад</a>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="alert alert-danger">
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    {% endwith %}
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const selected = document.querySelector('.select-selected');
+        const items = document.querySelector('.select-items');
+        
+        selected.addEventListener('click', function () {
+            items.style.display = items.style.display === 'block' ? 'none' : 'block';
+        });
+
+        items.querySelectorAll('div').forEach(function (item) {
+            item.addEventListener('click', function () {
+                selected.textContent = this.textContent;
+                document.getElementById('selected-currency').value = this.getAttribute('data-value');
+                items.style.display = 'none';
+            });
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!selected.contains(e.target) && !items.contains(e.target)) {
+                items.style.display = 'none';
+            }
+        });
+    });
+</script>
+{% endblock %}

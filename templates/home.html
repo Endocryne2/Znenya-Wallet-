@@ -1,0 +1,404 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #e6e6e6; /* Светлый фон, как в Telegram */
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    .logo {
+        position: absolute; /* Позиционирование для логотипа */
+        top: 5px; /* Отступ от верхней границы */
+        left: 20px; /* Отступ от левой границы */
+        width: 200px; /* Ширина логотипа */
+        height: 200; /* Автоматическая высота для сохранения пропорций */
+    }
+
+    .wallet-container {
+        max-width: 800px; /* Увеличен размер контейнера */
+        margin: 20px auto;
+        padding: 40px; /* Увеличен внутренний отступ */
+        background-color: #ffffff; /* Белый фон контейнера */
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Увеличена тень */
+        position: relative; /* Для позиционирования кнопки logout */
+    }
+
+    h2 {
+        text-align: center;
+        color: #0088cc; /* Цвет заголовка */
+        font-size: 32px; /* Увеличен размер заголовка */
+        margin-bottom: 20px; /* Отступ снизу */
+    }
+
+    .balance {
+        text-align: center; /* Центрирование текста */
+        font-size: 36px; /* Увеличен размер шрифта */
+        color: #0088cc; /* Цвет текста */
+        margin: 10px 0; /* Отступ сверху и снизу */
+    }
+
+    .address-container {
+        display: flex; /* Используем flexbox для выравнивания */
+        justify-content: center; /* Центрируем содержимое */
+        align-items: center; /* Вертикальное выравнивание */
+        flex-wrap: wrap; /* Позволяет обернуть содержимое на малых экранах */
+        margin-top: 10px; /* Отступ сверху */
+        background-color: rgba(0, 136, 204, 0.2); /* Синий фон с прозрачностью */
+        padding: 10px; /* Внутренний отступ для контейнера адреса */
+        border-radius: 20px; /* Закругленные углы с каждой стороны */
+        min-width: 150px; /* Минимальная ширина контейнера */
+        max-width: 100%; /* Максимальная ширина 100% от родительского элемента */
+        width: auto; /* Автоматическая ширина в зависимости от содержимого */
+    }
+
+    .address {
+        text-align: center; /* Центрирование текста */
+        font-size: 20px; /* Размер шрифта для адреса */
+        color: #0088CC; /* Цвет текста для адреса */
+        margin-right: 10px; /* Отступ справа */
+    }
+
+    .copy-button {
+        background: none; /* Убираем фон */
+        border: none; /* Убираем рамку */
+        cursor: pointer; /* Курсор при наведении */
+        color: #0088cc; /* Цвет иконок */
+        font-size: 20px; /* Размер иконки */
+        transition: color 0.3s;
+    }
+
+    .copy-button:hover {
+        color: #007bb5; /* Темнее при наведении */
+    }
+
+    h3 {
+        color: #333333; /* Цвет подзаголовков */
+        margin-top: 10px; /* Увеличен отступ сверху */
+        font-weight: 500; /* Немного жирнее, чем обычный текст */
+        font-size: 22px; /* Увеличен размер подзаголовка */
+        text-align: center; /* Центрирование текста для имени пользователя */
+    }
+
+    .coin {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 0; /* Увеличен отступ */
+        border-bottom: 1px solid #f0f0f0; /* Лёгкая линия внизу каждого элемента */
+        outline: none; /* Убираем стандартное выделение */
+        background-color: transparent; /* Прозрачный фон */
+        transition: background-color 0.2s; /* Плавный переход для изменения фона */
+    }
+
+    .coin:hover {
+        background-color: transparent; /* Убираем выделение при наведении */
+    }
+
+    .coin:last-child {
+        border-bottom: none;
+    }
+
+    .coin h3 {
+        margin: 0;
+        color: #333;
+        display: flex;
+        align-items: center;
+        font-size: 22px; /* Увеличен размер текста */
+    }
+
+    .coin p {
+        margin: 0;
+        color: #0088cc; /* Установлен синий цвет текста для баланса */
+        font-weight: bold;
+        font-size: 20px; /* Увеличен размер текста */
+    }
+
+    .coin .symbol {
+        font-size: 14px; /* Размер для символа */
+        color: #666; /* Цвет для символа */
+        margin-left: 10px; /* Отступ между балансом и символом */
+    }
+
+    .coin img {
+        width: 40px; /* Увеличен размер логотипа */
+        height: 40px; /* Увеличен размер логотипа */
+        margin-right: 10px; /* Отступ между логотипом и текстом */
+    }
+
+    .button-group {
+        display: flex; /* Выстраиваем кнопки в ряд */
+        justify-content: space-around; /* Равномерное распределение кнопок */
+        margin-bottom: 30px; /* Отступ снизу для кнопок */
+    }
+
+    .icon-button {
+        display: flex;
+        flex-direction: column; /* Размещаем текст под иконкой */
+        align-items: center; /* Центрируем текст под иконкой */
+        background: none; /* Убираем фон */
+        border: none; /* Убираем рамку */
+        cursor: pointer; /* Курсор при наведении */
+        color: #0088cc; /* Цвет иконок */
+        font-size: 26px; /* Размер иконок */
+        transition: color 0.3s;
+    }
+
+    .icon-button:hover {
+        color: #007bb5; /* Темнее при наведении */
+    }
+
+    .icon-button span {
+        font-size: 16px; /* Размер текста под иконкой */
+        margin-top: 5px; /* Отступ между иконкой и текстом */
+    }
+
+    /* Новый стиль для вертикального списка активов */
+    .vertical-balance-list {
+        display: block;
+        margin-top: 10px;
+    }
+
+    .divider {
+        border: none; /* Убираем стандартные границы */
+        height: 1px; /* Высота линии */
+        background-color: #f0f0f0; /* Цвет линии */
+        margin: 20px 0; /* Отступы сверху и снизу */
+    }
+
+    /* Стиль для кнопки выхода */
+    .logout-button {
+        position: absolute; /* Абсолютное позиционирование */
+        top: 20px; /* Отступ от верхней границы */
+        right: 20px; /* Отступ от правой границы */
+        background: none; /* Убираем фон */
+        border: none; /* Убираем рамку */
+        cursor: pointer; /* Курсор при наведении */
+        color: #ff5733; /* Цвет для кнопки выхода */
+        font-size: 24px; /* Размер иконки */
+        transition: color 0.3s;
+    }
+
+    .logout-button:hover {
+        color: #c70000; /* Темнее при наведении */
+    }
+
+    @media (max-width: 600px) {
+        .address {
+            font-size: 16px; /* Уменьшаем размер шрифта для адреса на мобильных */
+        }
+
+        .copy-button {
+            font-size: 18px; /* Уменьшаем размер иконки на мобильных */
+        }
+
+        h2 {
+            font-size: 28px; /* Уменьшаем размер заголовка на мобильных */
+        }
+
+        h3 {
+            font-size: 22px; /* Уменьшаем размер подзаголовка на мобильных */
+        }
+    }
+</style>
+
+
+<div class="wallet-container">
+    <!-- Кнопка выхода -->
+    <button class="logout-button" onclick="window.location.href='{{ url_for('logout') }}'">
+        <i class="fas fa-sign-out-alt"></i>
+    </button>
+
+    <!-- Имя пользователя -->
+    <h3>Имя пользователя: {{ user_info[1] }}</h3> <!-- Замените 1 на индекс вашего имени пользователя в user_info -->
+
+    <hr class="divider">
+    
+    <!-- Отображение адреса кошелька с кнопкой копирования -->
+    <div class="address-container">
+        <div class="address"> Адрес кошелька: {{ user_info[8][:4] }}...{{ user_info[8][-4:] }}</div> <!-- Замените 8 на индекс вашего адреса в user_info -->
+        <button class="copy-button" onclick="copyToClipboard('{{ user_info[8] }}')">
+            <i class="fas fa-copy"></i>
+        </button>
+    </div>
+
+    <h2>Ваш баланс</h2>
+    <div class="balance">
+        <img src="/static/zhenyacoin.png" alt="ZHY Icon" style="width: 1em; height: 1em; vertical-align: middle; margin-right: 5px;">
+        {{ user_info[3] }} $ZHY
+    </div>    
+    
+    <hr class="divider"> <!-- Разделительная линия -->
+
+    <div class="button-group">
+        <button class="icon-button" onclick="window.location.href='{{ url_for('top_up') }}'">
+            <i class="fas fa-plus-circle"></i>
+            <span>Пополнить</span>
+        </button>
+        <button class="icon-button" onclick="window.location.href='{{ url_for('transfer') }}'">
+            <i class="fas fa-arrow-right"></i>
+            <span>Перевести</span>
+        </button>
+        <button class="icon-button" onclick="window.location.href='{{ url_for('transaction_history') }}'">
+            <i class="fas fa-history"></i>
+            <span>История</span>
+        </button>
+        <button class="icon-button" onclick="window.location.href='{{ url_for('exchange') }}'">
+            <i class="fas fa-exchange-alt"></i>
+            <span>Обмен</span>
+        </button>        
+    </div>
+
+    <hr class="divider"> <!-- Разделительная линия -->
+
+    <div class="tabs">
+        <button class="tablink active" onclick="openTab(event, 'tokens')">Tokens</button>
+        <button class="tablink" onclick="openTab(event, 'nfts')">NFTs</button>
+        <button class="tablink" onclick="openTab(event, 'activity')">Activity</button>
+    </div>
+    
+    <!-- Содержимое вкладок -->
+    <div id="tokens" class="tabcontent" style="display: block;">
+        <h3 style="text-align: left;">Другие активы</h3>
+        <div class="vertical-balance-list">
+            <div class="coin">
+                <h3><img src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg" alt="Bitcoin"> Bitcoin</h3>
+                <p>{{ user_info[4] }} <span class="symbol">BTC</span></p>
+            </div>
+            <div class="coin">
+                <h3><img src="https://cryptologos.cc/logos/ethereum-eth-logo.svg" alt="Ethereum"> Ethereum</h3>
+                <p>{{ user_info[5] }} <span class="symbol">ETH</span></p>
+            </div>
+            <div class="coin">
+                <h3><img src="https://cryptologos.cc/logos/tether-usdt-logo.svg" alt="USDT"> USDT</h3>
+                <p>{{ user_info[6] }} <span class="symbol">USDT</span></p>
+            </div>
+            <div class="coin">
+                <h3><img src="https://cryptologos.cc/logos/toncoin-ton-logo.svg" alt="TON"> TON</h3>
+                <p>{{ user_info[7] }} <span class="symbol">TON</span></p>
+            </div>
+        </div>
+    </div>
+    
+    <div id="nfts" class="tabcontent">
+        <p>Здесь будет информация по NFT.</p>
+    </div>
+    
+    <div id="activity" class="tabcontent">
+        <p>Здесь будет информация по активности.</p>
+    </div>
+    
+    <style>
+        .tabs {
+            display: flex;
+            justify-content: flex-start;
+            border-bottom: 1px solid #e6e6e6;
+            margin-top: 20px;
+        }
+    
+        .tablink {
+            background-color: transparent;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 20px;
+            transition: background-color 0.3s ease;
+            font-size: 18px;
+            color: #333;
+        }
+    
+        .tablink:hover {
+            background-color: #f1f1f1;
+        }
+    
+        .tablink.active {
+            color: #0088cc;
+            border-bottom: 2px solid #0088cc;
+        }
+    
+        .tabcontent {
+            display: none;
+            padding: 20px;
+        }
+    
+        .tabcontent p {
+            font-size: 16px;
+            color: #333;
+        }
+    
+        .vertical-balance-list {
+            margin-top: 10px;
+        }
+    
+        .coin {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+    
+        .coin h3 {
+            display: flex;
+            align-items: center;
+            font-size: 22px;
+        }
+    
+        .coin img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+    
+        .coin p {
+            color: #0088cc;
+            font-weight: bold;
+            font-size: 20px;
+        }
+    
+        .coin .symbol {
+            font-size: 14px;
+            color: #666;
+            margin-left: 10px;
+        }
+    </style>
+    
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+    
+            // Скрыть все вкладки
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+    
+            // Удалить класс active со всех кнопок
+            tablinks = document.getElementsByClassName("tablink");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+    
+            // Показать выбранную вкладку и добавить класс active на кнопку
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+    </script>
+    
+
+<!-- Подключение Font Awesome для иконок -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<!-- Скрипт для копирования адреса в буфер обмена -->
+<script>
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(function() {
+            alert("Адрес скопирован в буфер обмена!"); // Уведомление об успешном копировании
+        }, function(err) {
+            console.error('Ошибка при копировании: ', err);
+        });
+    }
+</script>
+
+{% endblock %}

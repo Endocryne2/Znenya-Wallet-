@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #e6e6e6; /* Светлый фон, как в Telegram */
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    .register-container {
+        max-width: 400px; /* Максимальная ширина контейнера */
+        margin: 100px auto; /* Центрирование контейнера */
+        padding: 40px; /* Внутренний отступ */
+        background-color: #ffffff; /* Белый фон контейнера */
+        border-radius: 10px; /* Скругленные углы */
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Тень для контейнера */
+        text-align: center; /* Центрирование текста */
+    }
+
+    h1 {
+        color: #0088cc; /* Цвет заголовка */
+        font-size: 32px; /* Размер заголовка */
+        margin-bottom: 20px; /* Отступ снизу */
+    }
+
+    input[type="text"], input[type="password"] {
+        width: 100%; /* Ширина полей ввода на 100% */
+        padding: 15px; /* Внутренний отступ */
+        margin: 10px 0; /* Отступ сверху и снизу */
+        border: 1px solid #ccc; /* Рамка вокруг полей ввода */
+        border-radius: 5px; /* Скругленные углы */
+        box-sizing: border-box; /* Учет рамок и отступов в общей ширине */
+    }
+
+    button {
+        width: 100%; /* Ширина кнопки на 100% */
+        padding: 15px; /* Внутренний отступ */
+        background-color: #0088cc; /* Цвет фона кнопки */
+        border: none; /* Без рамки */
+        border-radius: 5px; /* Скругленные углы */
+        color: white; /* Цвет текста кнопки */
+        font-size: 16px; /* Размер шрифта */
+        cursor: pointer; /* Курсор при наведении */
+        transition: background-color 0.3s; /* Плавный переход цвета фона */
+    }
+
+    button:hover {
+        background-color: #007bb5; /* Цвет фона кнопки при наведении */
+    }
+
+    .login-link {
+        display: block; /* Блок для ссылки на вход */
+        margin-top: 20px; /* Отступ сверху */
+        color: #0088cc; /* Цвет текста */
+        text-decoration: none; /* Убираем подчеркивание */
+        font-size: 16px; /* Размер шрифта */
+        transition: color 0.3s; /* Плавный переход цвета */
+    }
+
+    .login-link:hover {
+        color: #007bb5; /* Цвет текста при наведении */
+    }
+</style>
+
+<div class="register-container">
+    <h1>Регистрация</h1>
+    <form method="POST" action="{{ url_for('register') }}">
+        <input type="text" name="username" placeholder="Имя пользователя" required>
+        <input type="password" name="password" placeholder="Пароль" required>
+        <button type="submit">Зарегистрироваться</button>
+    </form>
+    <a class="login-link" href="{{ url_for('login') }}">Уже есть аккаунт? Войти</a>
+</div>
+
+{% endblock %}

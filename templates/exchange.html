@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #e6e6e6; /* Светлый фон, как в Telegram */
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    .transfer-container {
+        max-width: 600px; /* Уменьшен размер контейнера */
+        margin: 20px auto; /* Центрирование контейнера */
+        padding: 40px; /* Внутренний отступ */
+        background-color: #ffffff; /* Белый фон контейнера */
+        border-radius: 10px; /* Скругленные углы */
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Тень для контейнера */
+        text-align: center; /* Центрирование текста */
+    }
+
+    h1 {
+        color: #0088cc; /* Цвет заголовка */
+        font-size: 28px; /* Размер заголовка */
+        margin-bottom: 20px; /* Отступ снизу */
+    }
+
+    .currency-select {
+        display: flex; /* Flexbox для выравнивания элементов */
+        align-items: center; /* Вертикальное выравнивание */
+        margin: 10px 0; /* Отступы */
+    }
+
+    select {
+        width: 100%; /* Ширина селекта на 100% */
+        padding: 15px; /* Внутренний отступ для селекта */
+        border: 1px solid #ccc; /* Рамка вокруг селекта */
+        border-radius: 5px; /* Скругленные углы */
+        font-size: 16px; /* Размер шрифта */
+        transition: border-color 0.3s; /* Плавный переход цвета рамки */
+    }
+
+    select:focus {
+        border-color: #0088cc; /* Цвет рамки при фокусе */
+        outline: none; /* Убираем стандартное выделение */
+    }
+
+    .arrow {
+        margin: 0 10px; /* Отступы для стрелки */
+    }
+
+    button {
+        width: 100%; /* Ширина кнопки на 100% */
+        padding: 15px; /* Внутренний отступ для кнопки */
+        margin-top: 20px; /* Отступ сверху */
+        background-color: #0088cc; /* Цвет фона кнопки */
+        color: white; /* Цвет текста на кнопке */
+        border: none; /* Убираем рамку */
+        border-radius: 5px; /* Скругленные углы */
+        cursor: pointer; /* Курсор при наведении */
+        transition: background-color 0.3s; /* Плавный переход цвета */
+        font-size: 16px; /* Размер шрифта */
+    }
+
+    button:hover {
+        background-color: #007bb5; /* Цвет фона кнопки при наведении */
+    }
+
+    .result {
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #e9ecef;
+        border-radius: 4px;
+        text-align: center;
+        font-size: 18px;
+    }
+
+    .result span {
+        font-weight: bold;
+        color: #28a745;
+    }
+
+    .alert {
+        margin-top: 20px; /* Отступ сверху для сообщений об ошибках */
+    }
+
+    .back-button {
+        display: inline-block; /* Внешний вид как у кнопки */
+        margin-top: 10px; /* Отступ сверху */
+        color: #0088cc; /* Цвет текста */
+        text-decoration: none; /* Убираем подчеркивание */
+        font-size: 16px; /* Размер шрифта */
+        transition: color 0.3s; /* Плавный переход цвета */
+    }
+
+    .back-button:hover {
+        color: #007bb5; /* Цвет текста при наведении */
+    }
+</style>
+
+<div class="transfer-container">
+    <h1>Обмен криптовалюты</h1>
+    <form method="POST" id="exchange-form">
+        <div class="currency-select">
+            <label for="from_currency">С какой валюты обменивать:</label>
+            <select id="from_currency" name="from_currency">
+                <option value="zhenyacoin">ZhenyaCoin <img src="{{ url_for('static', filename='coin.png') }}" alt="ZhenyaCoin" style="width:20px; vertical-align: middle;"></option>
+                <option value="bitcoin">Bitcoin <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=014" alt="Bitcoin" style="width:20px; vertical-align: middle;"></option>
+                <option value="ethereum">Ethereum <img src="https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=014" alt="Ethereum" style="width:20px; vertical-align: middle;"></option>
+                <option value="usdt">USDT <img src="https://cryptologos.cc/logos/tether-usdt-logo.svg?v=014" alt="USDT" style="width:20px; vertical-align: middle;"></option>
+                <option value="ton">TON <img src="https://cryptologos.cc/logos/toncoin-ton-logo.svg?v=014" alt="TON" style="width:20px; vertical-align: middle;"></option>
+            </select>
+        </div>
+        <div class="arrow">↓</div>
+        <div class="currency-select">
+            <label for="to_currency">На какую валюту обменивать:</label>
+            <select id="to_currency" name="to_currency">
+                <option value="zhenyacoin">ZhenyaCoin <img src="{{ url_for('static', filename='coin.png') }}" alt="ZhenyaCoin" style="width:20px; vertical-align: middle;"></option>
+                <option value="bitcoin">Bitcoin <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=014" alt="Bitcoin" style="width:20px; vertical-align: middle;"></option>
+                <option value="ethereum">Ethereum <img src="https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=014" alt="Ethereum" style="width:20px; vertical-align: middle;"></option>
+                <option value="usdt">USDT <img src="https://cryptologos.cc/logos/tether-usdt-logo.svg?v=014" alt="USDT" style="width:20px; vertical-align: middle;"></option>
+                <option value="ton">TON <img src="https://cryptologos.cc/logos/toncoin-ton-logo.svg?v=014" alt="TON" style="width:20px; vertical-align: middle;"></option>
+            </select>
+        </div>
+        <div>
+            <label for="amount">Сумма для обмена:</label>
+            <input type="number" id="amount" name="amount" required>
+        </div>
+        <div class="result">
+            <p>Вы получите: <span id="result-amount">0</span> <span id="result-currency">to_currency</span></p>
+        </div>
+        <button type="submit">Обменять</button>
+        <a href="javascript:history.back();" class="back-button">Назад</a>
+    </form>
+</div>
+
+<script>
+// Пример обменных курсов (нужно заменить реальными курсами)
+const exchangeRates = {
+    'zhenyacoin': 1.0,
+    'bitcoin': 50000.0,
+    'ethereum': 4000.0,
+    'usdt': 1.0,
+    'ton': 0.5,
+};
+
+// Функция для обновления суммы
+function updateResult() {
+    const fromCurrency = document.getElementById('from_currency').value;
+    const toCurrency = document.getElementById('to_currency').value;
+    const amount = parseFloat(document.getElementById('amount').value);
+
+    if (!isNaN(amount) && amount > 0) {
+        const resultAmount = (amount * exchangeRates[fromCurrency]) / exchangeRates[toCurrency];
+        document.getElementById('result-amount').innerText = resultAmount.toFixed(2); // Форматируем до двух знаков
+        document.getElementById('result-currency').innerText = toCurrency.charAt(0).toUpperCase() + toCurrency.slice(1);
+    } else {
+        document.getElementById('result-amount').innerText = '0';
+    }
+}
+
+// Обработчики событий для обновления результата
+document.getElementById('from_currency').addEventListener('change', updateResult);
+document.getElementById('to_currency').addEventListener('change', updateResult);
+document.getElementById('amount').addEventListener('input', updateResult);
+</script>
+{% endblock %}
